@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class TestAdapter extends ExpandableRecyclerAdapter<TestAdapter.TestListI
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_HEADER:
-                return new HeaderViewHolder(inflate(R.layout.item_header, parent));
+                return new HeaderViewHolder(inflate(R.layout.item_header, parent), R.id.expandable_cardview_item_header);
             case TYPE_PERSON:
             default:
                 return new ChildViewHolder(inflate(R.layout.item_person, parent));
@@ -70,23 +70,37 @@ public class TestAdapter extends ExpandableRecyclerAdapter<TestAdapter.TestListI
             name = (TextView) view.findViewById(R.id.item_header_name);
         }
 
+        public HeaderViewHolder(View view, int clickableViewID) {
+            super(view, clickableViewID, (ImageView) view.findViewById(R.id.item_arrow));
+            name = (TextView) view.findViewById(R.id.item_header_name);
+        }
+
         public void bind(int position) {
             super.bind(position);
-            name.setText(visibleItems.get(position).Text);
+            name.setText(getVisibleItems().get(position).Text);
         }
     }
 
     // ** CHILD ********************************************************************************* //
     public class ChildViewHolder extends ExpandableRecyclerAdapter.ViewHolder {
         TextView name;
+        View view;
 
         public ChildViewHolder(View view) {
             super(view);
+            this.view = view;
             name = (TextView) view.findViewById(R.id.item_name);
+
         }
 
-        public void bind(int position) {
-            name.setText(visibleItems.get(position).Text);
+        public void bind(final int position) {
+            name.setText(getVisibleItems().get(position).Text);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(mContext, getVisibleItems().get(position).Text, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 

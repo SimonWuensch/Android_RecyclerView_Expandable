@@ -14,7 +14,7 @@ import java.util.List;
 public abstract class ExpandableRecyclerAdapter<T extends ExpandableRecyclerAdapter.ListItem> extends RecyclerView.Adapter<ExpandableRecyclerAdapter.ViewHolder> {
     protected Context mContext;
     protected List<T> allItems = new ArrayList<>();
-    protected List<T> visibleItems = new ArrayList<>();
+    private List<T> visibleItems = new ArrayList<>();
     private List<Integer> indexList = new ArrayList<>();
     private SparseIntArray expandMap = new SparseIntArray();
     private int mode;
@@ -36,6 +36,10 @@ public abstract class ExpandableRecyclerAdapter<T extends ExpandableRecyclerAdap
         public ListItem(int itemType) {
             ItemType = itemType;
         }
+    }
+
+    public List<T> getVisibleItems(){
+        return visibleItems;
     }
 
     @Override
@@ -72,6 +76,18 @@ public abstract class ExpandableRecyclerAdapter<T extends ExpandableRecyclerAdap
             });
         }
 
+        public HeaderViewHolder(View view, int clickableViewID, final ImageView arrow) {
+            super(view);
+            this.arrow = arrow;
+            View clickableView = view.findViewById(clickableViewID);
+            clickableView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    handleClick();
+                }
+            });
+        }
+
         protected void handleClick() {
             if (toggleExpandedItems(getLayoutPosition(), false)) {
                 openArrow(arrow);
@@ -79,7 +95,6 @@ public abstract class ExpandableRecyclerAdapter<T extends ExpandableRecyclerAdap
                 closeArrow(arrow);
             }
         }
-
         public void bind(int position) {
             arrow.setRotation(isExpanded(position) ? 90 : 0);
         }
